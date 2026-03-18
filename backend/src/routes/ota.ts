@@ -1,0 +1,79 @@
+import { Router, Request, Response } from 'express';
+import { firmwareController } from '../controllers/firmware.controller';
+import { API_CODE } from '../models/types';
+import appConfig from '../config';
+
+const router = Router();
+
+router.get('/check', async (req: Request, res: Response) => {
+  try {
+    const { model, current_version } = req.query;
+    
+    if (!model || !current_version) {
+      return res.json({
+        code: API_CODE.PARAM_ERROR,
+        data: null,
+        message: '缺少必填参数 model 或 current_version',
+      });
+    }
+    
+    const modelInfo = await firmwareController.getModelByName(model as string);
+    if (!modelInfo) {
+      return res.json({
+        code: API_CODE.MODEL_NOT_FOUND,
+        data: null,
+        message: '型号不存在',
+      });
+    }
+    
+    const firmware = await firmwareController.getLatestFirmware(model as string, current_version as string);
+    
+    if (!firmware) {
+      return res.json({
+        code: API_CODE.SUCCESS,
+        data: {
+          upgrade_available: false,
+          version: current_version,
+          latest_version: current_version,
+        },
+        message: '已是最新版本',
+      });
+    }
+    
+    const path = `/firmwares/${model}/${firmware.version}.bin`;
+    const downloadUrl = appConfig.domain ? `${appConfig.domain}${path}` : path;
+    
+    return res.json({
+      code: API_CODE.SUCCESS,
+      data: {
+        upgrade_available: true,
+        version: firmware.version,
+        size: firmware.file_size,
+        md5: firmware.file_md5,
+        download_url: downloadUrl,
+        description: firmware.description,
+      },
+      message: 'success',
+    });
+  } catch (error) {
+    console.error('OTA check error:', error);
+    return res.json({
+      code: API_CODE.SERVER_ERROR,
+      data: null,
+      message: '服务器内部错误',
+    });
+  }
+});
+
+router.get('/download/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    await firmwareController.incrementDownloadCount(Number(id));
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Download count error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+export default router;
