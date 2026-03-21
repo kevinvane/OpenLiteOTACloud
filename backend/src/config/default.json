@@ -11,5 +11,6 @@
     "secret": "your-jwt-secret-change-in-production",
     "expiresIn": "24h"
   },
-  "domain": ""
+  "domain": "",
+  "defaultPassword": "ota2024"
 }

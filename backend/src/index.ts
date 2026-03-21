@@ -4,6 +4,7 @@ import mysql from 'mysql2/promise';
 import bcrypt from 'bcryptjs';
 import appConfig from './config';
 import { initDatabase } from './db';
+import { authMiddleware } from './middleware/auth';
 import otaRouter from './routes/ota';
 import authRouter from './routes/auth';
 import modelRouter from './routes/model';
@@ -22,21 +23,11 @@ initDatabase().then(() => {
   console.error('Database initialization failed:', err.message);
 });
 
-// 初始化API（临时）
-app.post('/api/init', async (req, res) => {
-  try {
-    await initDatabase();
-    res.json({ code: 0, message: '初始化成功' });
-  } catch (err: any) {
-    res.json({ code: 5001, message: err.message });
-  }
-});
-
 // 重置管理员密码API（临时）
-app.post('/api/reset-admin', async (req, res) => {
+app.post('/api/reset-admin', authMiddleware, async (req, res) => {
   try {
     const bcrypt = require('bcryptjs');
-    const hash = bcrypt.hashSync('ota2024', 10);
+    const hash = bcrypt.hashSync(appConfig.defaultPassword, 10);
     const connection = await mysql.createConnection({
       host: appConfig.database.host,
       port: appConfig.database.port,

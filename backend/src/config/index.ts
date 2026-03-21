@@ -33,6 +33,7 @@ interface AppConfig {
   storage: StorageConfig;
   jwt: JwtConfig;
   domain: string;
+  defaultPassword: string;
 }
 
 const defaultConfig = require('./default.json');
@@ -58,6 +59,7 @@ const appConfig: AppConfig = {
     expiresIn: process.env.JWT_EXPIRES_IN || defaultConfig.jwt.expiresIn,
   },
   domain: process.env.DOMAIN || defaultConfig.domain || '',
+  defaultPassword: process.env.DEFAULT_PASSWORD || defaultConfig.defaultPassword,
 };
 
 export default appConfig;
