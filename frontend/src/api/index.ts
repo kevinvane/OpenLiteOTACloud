@@ -28,7 +28,24 @@ request.interceptors.response.use(
     return response.data
   },
   (error) => {
-    ElMessage.error(error.message || '网络错误')
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      const { code, message } = error.response.data
+      if (code === 401) {
+        ElMessage.error('登录已过期，请重新登录')
+        localStorage.removeItem('token')
+        window.location.href = '/login'
+        return Promise.reject(new Error('登录已过期'))
+      }
+      ElMessage.error(message || '请求失败')
+    } else if (error.request) {
+      // The request was made but no response was received
+      ElMessage.error('网络错误')
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      ElMessage.error(error.message || '请求失败')
+    }
     return Promise.reject(error)
   }
 )
