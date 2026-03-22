@@ -90,6 +90,13 @@ export class FirmwareModel {
     await Database.execute('UPDATE firmware SET is_deleted = 1 WHERE id = ?', [id]);
   }
 
+  async update(id: number, version: string, description: string): Promise<void> {
+    await Database.execute(
+      'UPDATE firmware SET version = ?, description = ?, updated_at = NOW() WHERE id = ?',
+      [version, description, id]
+    );
+  }
+
   async incrementDownloadCount(id: number): Promise<void> {
     await Database.execute('UPDATE firmware SET download_count = download_count + 1 WHERE id = ?', [id]);
   }

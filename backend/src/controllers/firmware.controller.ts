@@ -31,6 +31,10 @@ export class FirmwareController {
     await firmwareModel.delete(id);
   }
 
+  async updateFirmware(id: number, version: string, description: string): Promise<void> {
+    await firmwareModel.update(id, version, description);
+  }
+
   async getModelOptions() {
     return deviceModelModel.getOptions();
   }

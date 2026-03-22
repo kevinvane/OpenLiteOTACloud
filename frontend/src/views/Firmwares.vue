@@ -24,8 +24,9 @@
             {{ new Date(row.created_at).toLocaleString() }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="100">
+        <el-table-column label="操作" width="150">
           <template #default="{ row }">
+            <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
             <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -41,6 +42,21 @@
       />
     </el-card>
     
+    <el-dialog v-model="editDialogVisible" title="编辑固件" width="500px">
+      <el-form :model="editForm" :rules="editRules" ref="editFormRef" label-width="100px">
+        <el-form-item label="版本号" prop="version">
+          <el-input v-model="editForm.version" placeholder="如: 1.0.0" />
+        </el-form-item>
+        <el-form-item label="版本描述">
+          <el-input v-model="editForm.description" type="textarea" :rows="3" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="editDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleEditSubmit" :loading="submitting">保存</el-button>
+      </template>
+    </el-dialog>
+
     <el-dialog v-model="dialogVisible" title="上传固件" width="500px">
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="选择型号" prop="modelId">
@@ -73,7 +89,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { getFirmwares, getModelOptions, uploadFirmware, deleteFirmware } from '../api'
+import { getFirmwares, getModelOptions, uploadFirmware, deleteFirmware, updateFirmware } from '../api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const loading = ref(false)
@@ -83,13 +99,19 @@ const pageSize = ref(10)
 const total = ref(0)
 
 const dialogVisible = ref(false)
+const editDialogVisible = ref(false)
 const submitting = ref(false)
 const formRef = ref()
+const editFormRef = ref()
 const _uploadRef = ref<any>()
 const modelOptions = ref<{ id: number; name: string }[]>([])
 const form = ref({ modelId: '', version: '', description: '', file: null as File | null })
+const editForm = ref({ id: 0, version: '', description: '' })
 const rules = {
   modelId: [{ required: true, message: '请选择型号', trigger: 'change' }],
+  version: [{ required: true, message: '请输入版本号', trigger: 'blur' }],
+}
+const editRules = {
   version: [{ required: true, message: '请输入版本号', trigger: 'blur' }],
 }
 
@@ -107,6 +129,27 @@ const fetchList = async () => {
 const fetchOptions = async () => {
   const { data } = await getModelOptions()
   modelOptions.value = data
+}
+
+const handleEdit = (row: any) => {
+  editForm.value = { id: row.id, version: row.version, description: row.description || '' }
+  editDialogVisible.value = true
+}
+
+const handleEditSubmit = async () => {
+  await editFormRef.value.validate()
+  submitting.value = true
+  try {
+    await updateFirmware(editForm.value.id, {
+      version: editForm.value.version,
+      description: editForm.value.description,
+    })
+    ElMessage.success('更新成功')
+    editDialogVisible.value = false
+    fetchList()
+  } finally {
+    submitting.value = false
+  }
 }
 
 const handleAdd = async () => {

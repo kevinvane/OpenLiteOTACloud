@@ -76,4 +76,7 @@ export const uploadFirmware = (data: FormData) =>
 
 export const deleteFirmware = (id: number) => request.delete(`/admin/firmwares/${id}`)
 
+export const updateFirmware = (id: number, data: { version: string; description?: string }) =>
+  request.put(`/admin/firmwares/${id}`, data)
+
 export const getDashboard = () => request.get('/admin/dashboard')

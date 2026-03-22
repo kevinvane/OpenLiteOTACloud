@@ -73,6 +73,30 @@ router.post('/', authMiddleware, upload.single('file'), async (req: AuthRequest,
   }
 });
 
+router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { version, description } = req.body;
+    
+    if (!version) {
+      return res.json({ code: API_CODE.PARAM_ERROR, message: '版本号不能为空' });
+    }
+    
+    const firmware = await firmwareController.getFirmwareById(Number(id));
+    if (!firmware) {
+      return res.json({ code: API_CODE.NOT_FOUND, message: '固件不存在' });
+    }
+    
+    await firmwareController.updateFirmware(Number(id), version, description || '');
+    await logController.addOperationLog(req.adminId!, 'update', 'firmware', Number(id), { version, description }, req.ip || '0.0.0.0');
+    
+    res.json({ code: API_CODE.SUCCESS, message: '更新成功' });
+  } catch (error) {
+    console.error('Update firmware error:', error);
+    res.json({ code: API_CODE.SERVER_ERROR, message: '服务器内部错误' });
+  }
+});
+
 router.delete('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
