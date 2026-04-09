@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { firmwareController } from '../controllers/firmware.controller';
 import { API_CODE } from '../models/types';
 import appConfig from '../config';
+import { validateVersion } from '../utils/version';
 
 const router = Router();
 
@@ -14,6 +15,14 @@ router.get('/check', async (req: Request, res: Response) => {
         code: API_CODE.PARAM_ERROR,
         data: null,
         message: '缺少必填参数 model 或 current_version',
+      });
+    }
+    
+    if (!validateVersion(current_version as string)) {
+      return res.json({
+        code: API_CODE.PARAM_ERROR,
+        data: null,
+        message: 'Version must be in x.x.x format (e.g., 1.0.0)',
       });
     }
     

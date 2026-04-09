@@ -45,7 +45,8 @@
     <el-dialog v-model="editDialogVisible" title="编辑固件" width="500px">
       <el-form :model="editForm" :rules="editRules" ref="editFormRef" label-width="100px">
         <el-form-item label="版本号" prop="version">
-          <el-input v-model="editForm.version" placeholder="如: 1.0.0" />
+          <el-input v-model="editForm.version" placeholder="格式: x.x.x, 如 1.0.0" />
+          <div class="version-tip">格式说明: 主版本号.次版本号.修订号, 如 1.0.0</div>
         </el-form-item>
         <el-form-item label="版本描述">
           <el-input v-model="editForm.description" type="textarea" :rows="3" />
@@ -65,7 +66,8 @@
           </el-select>
         </el-form-item>
         <el-form-item label="版本号" prop="version">
-          <el-input v-model="form.version" placeholder="如: 1.0.0" />
+          <el-input v-model="form.version" placeholder="格式: x.x.x, 如 1.0.0" />
+          <div class="version-tip">格式说明: 主版本号.次版本号.修订号, 如 1.0.0</div>
         </el-form-item>
         <el-form-item label="版本描述">
           <el-input v-model="form.description" type="textarea" :rows="3" />
@@ -202,4 +204,5 @@ onMounted(fetchList)
 
 <style scoped>
 .header { display: flex; justify-content: space-between; align-items: center; }
+.version-tip { font-size: 12px; color: #999; margin-top: 4px; }
 </style>

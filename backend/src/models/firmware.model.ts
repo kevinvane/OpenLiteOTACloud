@@ -1,5 +1,6 @@
 import { Database } from '../db/database';
 import { RowDataPacket } from 'mysql2/promise';
+import { compareVersions } from '../utils/version';
 
 export interface Firmware extends RowDataPacket {
   id: number;
@@ -37,7 +38,7 @@ export class FirmwareModel {
 
   async findByModelAndVersion(modelName: string, currentVersion: string): Promise<Firmware | null> {
     const latest = await this.findLatestByModel(modelName);
-    if (!latest || latest.version === currentVersion) return null;
+    if (!latest || compareVersions(latest.version, currentVersion) <= 0) return null;
     return latest;
   }
 

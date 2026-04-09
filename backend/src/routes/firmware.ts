@@ -8,6 +8,7 @@ import { firmwareController } from '../controllers/firmware.controller';
 import { modelController } from '../controllers/model.controller';
 import { logController } from '../controllers/log.controller';
 import { ensureDir, calculateMD5, generateFileName, getFileSize } from '../utils/file';
+import { validateVersion } from '../utils/version';
 import { API_CODE } from '../models/types';
 
 const router = Router();
@@ -40,6 +41,10 @@ router.post('/', authMiddleware, upload.single('file'), async (req: AuthRequest,
     
     if (!modelId || !version || !file) {
       return res.json({ code: API_CODE.PARAM_ERROR, message: '请填写完整信息并选择文件' });
+    }
+    
+    if (!validateVersion(version)) {
+      return res.json({ code: API_CODE.PARAM_ERROR, message: 'Version must be in x.x.x format (e.g., 1.0.0)' });
     }
     
     const model = await modelController.getModelById(Number(modelId));
@@ -80,6 +85,10 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
     
     if (!version) {
       return res.json({ code: API_CODE.PARAM_ERROR, message: '版本号不能为空' });
+    }
+    
+    if (!validateVersion(version)) {
+      return res.json({ code: API_CODE.PARAM_ERROR, message: 'Version must be in x.x.x format (e.g., 1.0.0)' });
     }
     
     const firmware = await firmwareController.getFirmwareById(Number(id));
