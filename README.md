@@ -39,7 +39,7 @@ npm start
 或使用 PM2 守护进程：
 
 ```bash
-pm2 start dist/index.js --name ota-backend
+pm2 start backend/ecosystem.config.js
 ```
 
 ### 3. 编译前端
