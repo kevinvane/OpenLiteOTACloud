@@ -41,9 +41,8 @@
         <el-card>
           <template #header>下载排行 Top 10</template>
           <el-table :data="stats.topDownloads">
-            <el-table-column prop="model_name" label="型号" />
-            <el-table-column prop="version" label="版本" />
-            <el-table-column prop="download_count" label="下载次数" />
+            <el-table-column prop="model" label="型号" />
+            <el-table-column prop="check_count" label="升级检查次数" />
           </el-table>
         </el-card>
       </el-col>

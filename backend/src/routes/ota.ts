@@ -3,6 +3,7 @@ import { firmwareController } from '../controllers/firmware.controller';
 import { API_CODE } from '../models/types';
 import appConfig from '../config';
 import { validateVersion } from '../utils/version';
+import { Database } from '../db/database';
 
 const router = Router();
 
@@ -36,6 +37,13 @@ router.get('/check', async (req: Request, res: Response) => {
     }
     
     const firmware = await firmwareController.getLatestFirmware(model as string, current_version as string);
+    
+    const upgradeAvailable = !!firmware;
+    
+    await Database.execute(
+      'INSERT INTO ota_check_log (model, current_version, upgrade_available) VALUES (?, ?, ?)',
+      [model, current_version, upgradeAvailable ? 1 : 0]
+    );
     
     if (!firmware) {
       return res.json({

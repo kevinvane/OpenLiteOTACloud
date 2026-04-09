@@ -67,5 +67,15 @@ CREATE TABLE IF NOT EXISTS `access_log` (
   KEY `idx_path_ip` (`path`, `ip`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- OTA检查统计表(用于统计ota/check接口调用次数)
+CREATE TABLE IF NOT EXISTS `ota_check_log` (
+  `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `model` VARCHAR(50) NOT NULL COMMENT '设备型号',
+  `current_version` VARCHAR(20) NOT NULL COMMENT '当前版本',
+  `upgrade_available` TINYINT DEFAULT 0 COMMENT '是否有新版本',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  KEY `idx_model_created` (`model`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- 插入默认管理员 admin/ota2024 (password hash for 'ota2024')
 INSERT INTO admin (username, password) VALUES ('admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZRGdjGj/n3.rsW4WzOFbMB3dHI.');
