@@ -36,7 +36,7 @@ router.get('/options', authMiddleware, async (req: AuthRequest, res: Response) =
 
 router.post('/', authMiddleware, upload.single('file'), async (req: AuthRequest, res: Response) => {
   try {
-    const { modelId, version, description } = req.body;
+    const { modelId, version, description, fileMd5: fileMd5Param } = req.body;
     const file = req.file;
     
     if (!modelId || !version || !file) {
@@ -63,7 +63,7 @@ router.post('/', authMiddleware, upload.single('file'), async (req: AuthRequest,
     fs.renameSync(file.path, destPath);
     
     const fileSize = getFileSize(destPath);
-    const fileMd5 = calculateMD5(destPath);
+    const fileMd5 = fileMd5Param || calculateMD5(destPath);
     
     const id = await firmwareController.createFirmware(Number(modelId), version, description || '', destPath, fileSize, fileMd5);
     await logController.addOperationLog(req.adminId!, 'create', 'firmware', id, { modelId, version, fileSize }, req.ip || '0.0.0.0');

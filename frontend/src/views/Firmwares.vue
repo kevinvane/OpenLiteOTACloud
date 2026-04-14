@@ -72,6 +72,9 @@
         <el-form-item label="版本描述">
           <el-input v-model="form.description" type="textarea" :rows="3" />
         </el-form-item>
+        <el-form-item label="MD5值">
+          <el-input v-model="form.fileMd5" placeholder="可选，优先使用此值" />
+        </el-form-item>
         <el-form-item label="选择文件" prop="file">
           <el-upload ref="_uploadRef" :auto-upload="false" :limit="1" :on-change="handleFileChange">
             <el-button>选择文件</el-button>
@@ -107,7 +110,7 @@ const formRef = ref()
 const editFormRef = ref()
 const _uploadRef = ref<any>()
 const modelOptions = ref<{ id: number; name: string }[]>([])
-const form = ref({ modelId: '', version: '', description: '', file: null as File | null })
+const form = ref({ modelId: '', version: '', description: '', fileMd5: '', file: null as File | null })
 const editForm = ref({ id: 0, version: '', description: '' })
 const rules = {
   modelId: [{ required: true, message: '请选择型号', trigger: 'change' }],
@@ -156,7 +159,7 @@ const handleEditSubmit = async () => {
 
 const handleAdd = async () => {
   await fetchOptions()
-  form.value = { modelId: '', version: '', description: '', file: null }
+  form.value = { modelId: '', version: '', description: '', fileMd5: '', file: null }
   _uploadRef.value?.clearFiles()
   dialogVisible.value = true
 }
@@ -177,6 +180,9 @@ const handleSubmit = async () => {
     formData.append('modelId', form.value.modelId)
     formData.append('version', form.value.version)
     formData.append('description', form.value.description)
+    if (form.value.fileMd5) {
+      formData.append('fileMd5', form.value.fileMd5)
+    }
     formData.append('file', form.value.file)
     
     await uploadFirmware(formData)
