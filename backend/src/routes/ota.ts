@@ -4,6 +4,8 @@ import { API_CODE } from '../models/types';
 import appConfig from '../config';
 import { validateVersion } from '../utils/version';
 import { Database } from '../db/database';
+import fs from 'fs';
+import path from 'path';
 
 const router = Router();
 
@@ -57,8 +59,8 @@ router.get('/check', async (req: Request, res: Response) => {
       });
     }
     
-    const path = `/firmwares/${model}/${firmware.version}.bin`;
-    const downloadUrl = appConfig.domain ? `${appConfig.domain}${path}` : path;
+    const downloadPath = `/api/ota/download/${firmware.id}`;
+    const downloadUrl = appConfig.domain ? `${appConfig.domain}${downloadPath}` : downloadPath;
     
     return res.json({
       code: API_CODE.SUCCESS,
@@ -85,10 +87,23 @@ router.get('/check', async (req: Request, res: Response) => {
 router.get('/download/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const firmware = await firmwareController.getFirmwareById(Number(id));
+    
+    if (!firmware || !firmware.file_path || !fs.existsSync(firmware.file_path)) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+    
     await firmwareController.incrementDownloadCount(Number(id));
-    res.json({ success: true });
+    
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Disposition', `attachment; filename="${firmware.version}.bin"`);
+    res.setHeader('Content-Length', firmware.file_size);
+    res.setHeader('Content-MD5', firmware.file_md5);
+    
+    const fileStream = fs.createReadStream(firmware.file_path);
+    fileStream.pipe(res);
   } catch (error) {
-    console.error('Download count error:', error);
+    console.error('Download error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });

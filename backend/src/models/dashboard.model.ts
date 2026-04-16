@@ -26,12 +26,13 @@ export class DashboardModel {
       FROM device_model m WHERE m.status = 1
     `);
     
-    const topDownloads = await Database.query<{ model: string; check_count: number }[]>(`
-      SELECT model, COUNT(*) as check_count 
-      FROM ota_check_log 
-      WHERE upgrade_available = 1
-      GROUP BY model 
-      ORDER BY check_count DESC 
+    const topDownloads = await Database.query<{ model: string; download_count: number }[]>(`
+      SELECT m.name as model, COALESCE(SUM(f.download_count), 0) as download_count 
+      FROM device_model m 
+      LEFT JOIN firmware f ON m.id = f.model_id AND f.is_deleted = 0 
+      WHERE m.status = 1
+      GROUP BY m.id, m.name 
+      ORDER BY download_count DESC 
       LIMIT 10
     `);
     
