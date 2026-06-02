@@ -31,6 +31,11 @@ const routes: RouteRecordRaw[] = [
         name: 'Firmwares',
         component: () => import('../views/Firmwares.vue'),
       },
+      {
+        path: 'device-api',
+        name: 'DeviceApiDoc',
+        component: () => import('../views/DeviceApiDoc.vue'),
+      },
     ],
   },
 ]

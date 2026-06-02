@@ -19,6 +19,10 @@
           <el-icon><FolderOpened /></el-icon>
           <span>固件管理</span>
         </el-menu-item>
+        <el-menu-item index="/device-api">
+          <el-icon><Document /></el-icon>
+          <span>API文档</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
