@@ -92,3 +92,8 @@ mysql -u root -p ota_cloud < backend/src/db/init.sql
 | 前端开发 | `cd frontend && npm run dev` |
 | 前端构建 | `cd frontend && npm run build` |
 | 前端预览 | `cd frontend && npm run preview` |
+
+## 默认端口
+
+* 后端：18802
+* 前端：8802

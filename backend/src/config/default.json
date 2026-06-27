@@ -1,6 +1,6 @@
 {
   "server": {
-    "port": 8801,
+    "port": 18802,
     "host": "0.0.0.0"
   },
   "storage": {
@@ -11,6 +11,6 @@
     "secret": "your-jwt-secret-change-in-production",
     "expiresIn": "24h"
   },
-  "domain": "",
+  "domain": "http://localhost:18802",
   "defaultPassword": "ota2024"
 }
