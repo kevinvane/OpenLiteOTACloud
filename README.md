@@ -67,7 +67,7 @@ server {
     }
     
     location /api/ {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:18081;
     }
 }
 ```
@@ -95,5 +95,5 @@ mysql -u root -p ota_cloud < backend/src/db/init.sql
 
 ## 默认端口
 
-* 后端：18802
+* 后端：18081
 * 前端：8802

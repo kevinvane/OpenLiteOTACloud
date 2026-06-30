@@ -33,4 +33,4 @@ echo "[6/6] 重启 PM2 服务..."
 pm2 restart backend/ecosystem.config.js || pm2 start backend/ecosystem.config.js
 
 echo "========== 更新完成 =========="
-echo "后端 API: http://localhost:3000"
+echo "后端 API: http://localhost:18081"
