@@ -10,10 +10,10 @@ export default defineConfig({
     Markdown({}),
   ],
   server: {
-    port: 8802,
+    port: 8080,
     proxy: {
       '/api': {
-        target: 'http://localhost:8801',
+        target: 'http://localhost:18081',
         changeOrigin: true,
       },
     },

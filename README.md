@@ -96,4 +96,4 @@ mysql -u root -p ota_cloud < backend/src/db/init.sql
 ## 默认端口
 
 * 后端：18081
-* 前端：8802
+* 前端：8080

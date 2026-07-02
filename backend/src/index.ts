@@ -16,12 +16,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 初始化数据库
-initDatabase().then(() => {
-  console.log('Database initialized successfully');
-}).catch((err) => {
-  console.error('Database initialization failed:', err.message);
-});
+// 执行 backend/src/db/init.sql 初始化数据库（手动执行即可）
+// initDatabase().then(() => {
+//   console.log('Database initialized successfully');
+// }).catch((err) => {
+//   console.error('Database initialization failed:', err.message);
+// });
+console.log(`Database use: ${appConfig.database.database}`);
+
 
 // 重置管理员密码API（临时）
 app.post('/api/reset-admin', authMiddleware, async (req, res) => {
@@ -34,7 +36,7 @@ app.post('/api/reset-admin', authMiddleware, async (req, res) => {
       user: appConfig.database.user,
       password: appConfig.database.password,
     });
-    await connection.execute(`UPDATE ota_cloud.admin SET password = ? WHERE username = 'admin'`, [hash]);
+    await connection.execute(`UPDATE ${appConfig.database.database}.admin SET password = ? WHERE username = 'admin'`, [hash]);
     await connection.end();
     res.json({ code: 0, message: '密码已重置' });
   } catch (err: any) {
